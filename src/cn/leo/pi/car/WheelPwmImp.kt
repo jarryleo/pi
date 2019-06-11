@@ -7,8 +7,8 @@ import com.pi4j.io.gpio.PinState
 
 class WheelPwmImp(pin1: Pin, pin2: Pin) : Wheel {
 
-    private val pin1Pwm = GPIO.instance.provisionPwmOutputPin(pin1)
-    private val pin2Pwm = GPIO.instance.provisionPwmOutputPin(pin2)
+    private val pin1Pwm = GPIO.instance.provisionSoftPwmOutputPin(pin1)
+    private val pin2Pwm = GPIO.instance.provisionSoftPwmOutputPin(pin2)
     private val pin1Dig = GPIO.instance.provisionDigitalOutputPin(pin1, PinState.LOW)
     private val pin2Dig = GPIO.instance.provisionDigitalOutputPin(pin2, PinState.LOW)
 
