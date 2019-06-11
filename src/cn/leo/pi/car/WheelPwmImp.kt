@@ -9,8 +9,8 @@ class WheelPwmImp(pin1: Pin, pin2: Pin) : Wheel {
 
     private val pin1Pwm = GPIO.instance.provisionPwmOutputPin(pin1)
     private val pin2Pwm = GPIO.instance.provisionPwmOutputPin(pin2)
-    private val pin1Dig = GPIO.instance.provisionDigitalOutputPin(pin1,PinState.LOW)
-    private val pin2Dig = GPIO.instance.provisionDigitalOutputPin(pin2,PinState.LOW)
+    private val pin1Dig = GPIO.instance.provisionDigitalOutputPin(pin1, PinState.LOW)
+    private val pin2Dig = GPIO.instance.provisionDigitalOutputPin(pin2, PinState.LOW)
 
     override fun idle() {
         pin1Dig.low()
@@ -18,20 +18,20 @@ class WheelPwmImp(pin1: Pin, pin2: Pin) : Wheel {
     }
 
     override fun forward(speed: Int) {
-        if (speed <0){
+        if (speed < 0) {
             pin1Dig.high()
-        }else {
-            pin1Pwm.setPwmRange(speed)
+        } else {
+            pin1Pwm.pwm = speed
         }
         pin2Dig.low()
     }
 
     override fun backward(speed: Int) {
         pin1Dig.low()
-        if (speed <0){
+        if (speed < 0) {
             pin2Dig.high()
-        }else {
-            pin2Pwm.setPwmRange(speed)
+        } else {
+            pin2Pwm.pwm = speed
         }
     }
 
