@@ -23,20 +23,44 @@ class Car4WheelImpl(private val wheelLF:Wheel,//左前轮
     }
 
     override fun left(speed: Int) {
+        wheelLF.forward(speed)
+        wheelRF.backward(speed)
+        wheelLB.backward(speed)
+        wheelRB.forward(speed)
     }
 
     override fun right(speed: Int) {
+        wheelLF.backward(speed)
+        wheelRF.forward(speed)
+        wheelLB.forward(speed)
+        wheelRB.backward(speed)
     }
 
     override fun turnLeft(speed: Int) {
+        wheelLF.backward(speed)
+        wheelRF.forward(speed)
+        wheelLB.backward(speed)
+        wheelRB.forward(speed)
     }
 
     override fun turnRight(speed: Int) {
+        wheelLF.forward(speed)
+        wheelRF.backward(speed)
+        wheelLB.forward(speed)
+        wheelRB.backward(speed)
     }
 
     override fun brake() {
+        wheelLF.brake()
+        wheelRF.brake()
+        wheelLB.brake()
+        wheelRB.brake()
     }
 
     override fun idle() {
+        wheelLF.idle()
+        wheelRF.idle()
+        wheelLB.idle()
+        wheelRB.idle()
     }
 }
