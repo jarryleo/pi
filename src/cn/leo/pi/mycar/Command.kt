@@ -5,4 +5,6 @@ data class Command(
         var command :Int,
         //速度（1-100）
         var speed : Int = 0
-)
+){
+    constructor():this(0,0)
+}

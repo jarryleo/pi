@@ -16,10 +16,10 @@ class UdpSendCore {
     private DatagramPacket datagramPacket;
 
     public UdpSendCore() {
-        creatSendSocket();
+        createSendSocket();
     }
 
-    private void creatSendSocket() {
+    private void createSendSocket() {
         try {
             sendSocket = new DatagramSocket();
         } catch (SocketException e) {
