@@ -1,4 +1,4 @@
-package cn.leo.pi.car
+package cn.leo.pi.car.dim
 
 /**
  * 单车轮控制接口
