@@ -21,4 +21,18 @@ object MyCar {
             PinUtil.getPin(PropertiesUtil.pinRB2))
 
     val car = Car4WheelImpl(wheelLF, wheelRF, wheelLB, wheelRB)
+
+    //小车执行指令
+    fun executeCommand(command: Command){
+        when(command.command){
+            CommandType.IDLE -> car.idle()
+            CommandType.FORWARD -> car.forward(command.speed)
+            CommandType.BACKWARD -> car.backward(command.speed)
+            CommandType.LEFT -> car.left(command.speed)
+            CommandType.RIGHT -> car.right(command.speed)
+            CommandType.TURN_LEFT -> car.turnLeft(command.speed)
+            CommandType.TURN_RIGHT -> car.turnRight(command.speed)
+            CommandType.BRAKE -> car.brake()
+        }
+    }
 }
