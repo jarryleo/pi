@@ -3,7 +3,12 @@ package cn.leo.pi.gpio
 import com.pi4j.io.gpio.GpioFactory
 
 object GPIO {
-    private val gpio = GpioFactory.getInstance()
+    private var gpio = GpioFactory.getInstance()
     val instance
-    get() = gpio
+    get() = if(gpio.isShutdown){
+        gpio = GpioFactory.getInstance()
+        gpio
+    }else{
+        gpio
+    }
 }

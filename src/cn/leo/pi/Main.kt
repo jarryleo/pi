@@ -14,5 +14,4 @@ fun main(args: Array<String>) {
         pin1.blink(120)
         pin1.toggle()
 
-    gpio.shutdown()
 }
