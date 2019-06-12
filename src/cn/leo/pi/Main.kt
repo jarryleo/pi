@@ -24,10 +24,12 @@ fun main(args: Array<String>) = runBlocking {
             if (msg.type == MsgType.TYPE_CAR) {
                 MyCar.executeCommand(msg.data as Command)
             }
+            if (msg.type != MsgType.TYPE_BORAD_CAST) {
+                logD("$host :$json")
+            }
         }catch (e:Exception){
             e.printStackTrace()
         }
-        logD("$host :$json")
     }
     logI("小车控制系统启动完成")
 
