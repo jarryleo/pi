@@ -22,7 +22,7 @@ fun main(args: Array<String>) = runBlocking {
         val json = String(data, Charsets.UTF_8)
         try {
             val msg = JSON.parseObject(json, BaseMsg::class.java)
-            if (msg.type == MsgType.TYPE_BORAD_CAST) {
+            if (msg.type == MsgType.TYPE_BROADCAST) {
                 timeOut = 0
                 if (remoteHost !=host) {
                     remoteHost = host

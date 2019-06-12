@@ -3,7 +3,6 @@ package cn.leo.pi
 import cn.leo.pi.msg.BaseMsg
 import cn.leo.pi.msg.MsgType
 import cn.leo.pi.mycar.Command
-import cn.leo.pi.mycar.CommandType
 import cn.leo.pi.mycar.MyCar
 import cn.leo.pi.udp.UdpFrame
 import cn.leo.pi.utils.PropertiesUtil
@@ -24,7 +23,7 @@ fun main(args: Array<String>) = runBlocking {
             if (msg.type == MsgType.TYPE_CAR) {
                 MyCar.executeCommand(msg.data as Command)
             }
-            if (msg.type != MsgType.TYPE_BORAD_CAST) {
+            if (msg.type != MsgType.TYPE_BROADCAST) {
                 logD("$host :$json")
             }
         }catch (e:Exception){
@@ -32,10 +31,10 @@ fun main(args: Array<String>) = runBlocking {
         }
     }
     logI("小车控制系统启动完成")
-
+    //每秒广播自身位置
     while (isActive){
         delay(1000)
-        val msg = BaseMsg<String>(type = MsgType.TYPE_BORAD_CAST)
+        val msg = BaseMsg<String>(type = MsgType.TYPE_BROADCAST)
         val json = JSON.toJSONString(msg)
         sender.sendBroadcast(json.toByteArray(Charsets.UTF_8))
     }
