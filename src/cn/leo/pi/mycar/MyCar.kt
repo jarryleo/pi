@@ -7,16 +7,16 @@ import cn.leo.pi.gpio.PinUtil
 import cn.leo.pi.utils.PropertiesUtil
 
 object MyCar {
-    val wheelLF: Wheel = WheelPwmImp(
+    val wheelLF = WheelPwmImp(
             PinUtil.getPin(PropertiesUtil.pinLF1),
             PinUtil.getPin(PropertiesUtil.pinLF2))
-    val wheelRF: Wheel = WheelPwmImp(
+    val wheelRF = WheelPwmImp(
             PinUtil.getPin(PropertiesUtil.pinRF1),
             PinUtil.getPin(PropertiesUtil.pinRF2))
-    val wheelLB: Wheel = WheelPwmImp(
+    val wheelLB = WheelPwmImp(
             PinUtil.getPin(PropertiesUtil.pinLB1),
             PinUtil.getPin(PropertiesUtil.pinLB2))
-    val wheelRB: Wheel = WheelPwmImp(
+    val wheelRB = WheelPwmImp(
             PinUtil.getPin(PropertiesUtil.pinRB1),
             PinUtil.getPin(PropertiesUtil.pinRB2))
 
@@ -35,4 +35,23 @@ object MyCar {
             CommandType.BRAKE -> car.brake()
         }
     }
+    //小车精细控制
+    fun executePWM(command :PwmCommand){
+        if (command.pwmArray.size != 8){
+            return
+        }
+        command.pwmArray.forEachIndexed { index, pwm ->
+            when(index){
+                0 -> wheelLF.pin1Pwm.pwm = pwm
+                1 -> wheelLF.pin2Pwm.pwm = pwm
+                2 -> wheelRF.pin1Pwm.pwm = pwm
+                3 -> wheelRF.pin2Pwm.pwm = pwm
+                4 -> wheelLB.pin1Pwm.pwm = pwm
+                5 -> wheelLB.pin2Pwm.pwm = pwm
+                6 -> wheelRB.pin1Pwm.pwm = pwm
+                7 -> wheelRB.pin2Pwm.pwm = pwm
+            }
+        }
+    }
+
 }

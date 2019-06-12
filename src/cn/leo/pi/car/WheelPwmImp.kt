@@ -7,8 +7,8 @@ import com.pi4j.io.gpio.PinState
 
 class WheelPwmImp(pin1: Pin, pin2: Pin) : Wheel {
 
-    private val pin1Pwm = GPIO.instance.provisionSoftPwmOutputPin(pin1)
-    private val pin2Pwm = GPIO.instance.provisionSoftPwmOutputPin(pin2)
+    val pin1Pwm = GPIO.instance.provisionSoftPwmOutputPin(pin1)
+    val pin2Pwm = GPIO.instance.provisionSoftPwmOutputPin(pin2)
 
     override fun idle() {
         pin1Pwm.pwm = 0

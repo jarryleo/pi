@@ -4,6 +4,7 @@ import cn.leo.pi.msg.BaseMsg
 import cn.leo.pi.msg.MsgType
 import cn.leo.pi.mycar.Command
 import cn.leo.pi.mycar.MyCar
+import cn.leo.pi.mycar.PwmCommand
 import cn.leo.pi.udp.UdpFrame
 import cn.leo.pi.utils.PropertiesUtil
 import cn.leo.pi.utils.logD
@@ -21,7 +22,11 @@ fun main(args: Array<String>) = runBlocking {
         try {
             val msg = JSON.parseObject(json, BaseMsg::class.java)
             if (msg.type == MsgType.TYPE_CAR) {
+                //小车执行普通指令（前后左右转弯）
                 MyCar.executeCommand(msg.data as Command)
+            }else if(msg.type == MsgType.TYPE_PWM_COMMAND){
+                //小车执行精细指令（每个轮子独立控制）特技玩法
+                MyCar.executePWM(msg.data as PwmCommand)
             }
             if (msg.type != MsgType.TYPE_BROADCAST) {
                 logD("$host :$json")

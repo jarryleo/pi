@@ -8,6 +8,7 @@ import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent
 import com.pi4j.io.gpio.event.GpioPinListenerDigital
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import kotlin.properties.Delegates
 
 /**
  * 超声波测距
@@ -17,6 +18,10 @@ import kotlinx.coroutines.isActive
 class UltrasonicSensor(trigPin: Int, echoPin: Int) : BaseSensor {
     private val trig = GPIO.instance.provisionDigitalOutputPin(PinUtil.getPin(trigPin))
     private val echo = GPIO.instance.provisionDigitalInputPin(PinUtil.getPin(echoPin))
+    var delayTime:Long by Delegates.vetoable(200L){
+        _, _, newValue ->
+        newValue in 10L..5000L
+    }
 
     fun listen(listener: (Double) -> Unit) {
         CoroutineUtil.io {
@@ -35,7 +40,7 @@ class UltrasonicSensor(trigPin: Int, echoPin: Int) : BaseSensor {
                         }
                     }
                 })
-                delay(200)
+                delay(delayTime)
                 echo.removeAllListeners()
             }
         }
