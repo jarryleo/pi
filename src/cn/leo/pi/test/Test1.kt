@@ -2,15 +2,15 @@ package cn.leo.pi.test
 
 import cn.leo.pi.msg.BaseMsg
 import cn.leo.pi.msg.MsgType
-import cn.leo.pi.mycar.Command
-import cn.leo.pi.mycar.MyCar
 import cn.leo.pi.udp.UdpFrame
 import cn.leo.pi.utils.CoroutineUtil
 import cn.leo.pi.utils.PropertiesUtil
 import cn.leo.pi.utils.logD
 import cn.leo.pi.utils.logI
 import com.alibaba.fastjson.JSON
-import kotlinx.coroutines.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.runBlocking
 import java.util.*
 
 fun main(args: Array<String>) = runBlocking {
@@ -43,7 +43,7 @@ fun main(args: Array<String>) = runBlocking {
             if (remoteHost != "") {
                 delay(1000)
                 timeOut++
-                if (timeOut > 10) {
+                if (timeOut == 10) {
                     logI("树莓派断开连接")
                 }
             }
