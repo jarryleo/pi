@@ -5,4 +5,9 @@ data class Command(//小车方向控制：0待机，1 前，2后，3左，4右�
         //速度（1-100）
         var speed: Int = 0) {
     constructor() : this(0, 0)
+
+    override fun toString(): String {
+        return "Command(command=$command, speed=$speed)"
+    }
+
 }

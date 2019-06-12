@@ -6,6 +6,7 @@ import cn.leo.pi.car.dim.CarStatus
 import cn.leo.pi.gpio.PinUtil
 import cn.leo.pi.sensor.UltrasonicSensor
 import cn.leo.pi.utils.PropertiesUtil
+import cn.leo.pi.utils.logD
 
 object MyCar {
     val wheelLF = WheelPwmImp(
@@ -26,6 +27,7 @@ object MyCar {
     val ultrasonicSensor = UltrasonicSensor(PropertiesUtil.pinTrig,PropertiesUtil.pinEcho)
             .apply {
                 listen {
+                    logD("当前距离："+it.toString())
                     if (it <= 100 && car.carStatus == CarStatus.STATE_FORWARD){
                         car.brake()
                     }
@@ -34,6 +36,7 @@ object MyCar {
 
     //小车执行指令
     fun executeCommand(command: Command){
+        //logD(command.toString())
         when(command.command){
             CommandType.IDLE -> car.idle()
             CommandType.FORWARD -> {
