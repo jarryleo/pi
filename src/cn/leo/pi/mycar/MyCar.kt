@@ -2,8 +2,9 @@ package cn.leo.pi.mycar
 
 import cn.leo.pi.car.Car4WheelImpl
 import cn.leo.pi.car.WheelPwmImp
-import cn.leo.pi.car.dim.Wheel
+import cn.leo.pi.car.dim.CarStatus
 import cn.leo.pi.gpio.PinUtil
+import cn.leo.pi.sensor.UltrasonicSensor
 import cn.leo.pi.utils.PropertiesUtil
 
 object MyCar {
@@ -22,11 +23,24 @@ object MyCar {
 
     val car = Car4WheelImpl(wheelLF, wheelRF, wheelLB, wheelRB)
 
+    val ultrasonicSensor = UltrasonicSensor(PropertiesUtil.pinTrig,PropertiesUtil.pinEcho)
+            .apply {
+                listen {
+                    if (it <= 100 && car.carStatus == CarStatus.STATE_FORWARD){
+                        car.brake()
+                    }
+                }
+            }
+
     //小车执行指令
     fun executeCommand(command: Command){
         when(command.command){
             CommandType.IDLE -> car.idle()
-            CommandType.FORWARD -> car.forward(command.speed)
+            CommandType.FORWARD -> {
+                if (ultrasonicSensor.distance > 100) {
+                    car.forward(command.speed)
+                }
+            }
             CommandType.BACKWARD -> car.backward(command.speed)
             CommandType.LEFT -> car.left(command.speed)
             CommandType.RIGHT -> car.right(command.speed)

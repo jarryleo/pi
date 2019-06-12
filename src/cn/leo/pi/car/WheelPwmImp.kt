@@ -3,7 +3,6 @@ package cn.leo.pi.car
 import cn.leo.pi.car.dim.Wheel
 import cn.leo.pi.gpio.GPIO
 import com.pi4j.io.gpio.Pin
-import com.pi4j.io.gpio.PinState
 
 class WheelPwmImp(pin1: Pin, pin2: Pin) : Wheel {
 

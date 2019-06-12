@@ -1,5 +1,6 @@
 package cn.leo.pi.car
 
+import cn.leo.pi.car.dim.CarStatus
 import cn.leo.pi.car.dim.SimpleCar
 import cn.leo.pi.car.dim.Wheel
 
@@ -11,11 +12,14 @@ class Car4WheelImpl(private val wheelLF: Wheel,//左前轮
                     private val wheelLB: Wheel,//左后轮
                     private val wheelRB: Wheel //右后轮
                     ): SimpleCar {
+    var carStatus:Int = CarStatus.STATE_IDLE
+
     override fun forward(speed: Int) {
         wheelLF.forward(speed)
         wheelRF.forward(speed)
         wheelLB.forward(speed)
         wheelRB.forward(speed)
+        carStatus = CarStatus.STATE_FORWARD
     }
 
     override fun backward(speed: Int) {
@@ -23,6 +27,7 @@ class Car4WheelImpl(private val wheelLF: Wheel,//左前轮
         wheelRF.backward(speed)
         wheelLB.backward(speed)
         wheelRB.backward(speed)
+        carStatus = CarStatus.STATE_BACKWARD
     }
 
     override fun left(speed: Int) {
@@ -30,6 +35,7 @@ class Car4WheelImpl(private val wheelLF: Wheel,//左前轮
         wheelRF.backward(speed)
         wheelLB.backward(speed)
         wheelRB.forward(speed)
+        carStatus = CarStatus.STATE_LEFT
     }
 
     override fun right(speed: Int) {
@@ -37,6 +43,7 @@ class Car4WheelImpl(private val wheelLF: Wheel,//左前轮
         wheelRF.forward(speed)
         wheelLB.forward(speed)
         wheelRB.backward(speed)
+        carStatus = CarStatus.STATE_RIGHT
     }
 
     override fun turnLeft(speed: Int) {
@@ -44,6 +51,7 @@ class Car4WheelImpl(private val wheelLF: Wheel,//左前轮
         wheelRF.forward(speed)
         wheelLB.backward(speed)
         wheelRB.forward(speed)
+        carStatus = CarStatus.STATE_TRUN_LEFT
     }
 
     override fun turnRight(speed: Int) {
@@ -51,6 +59,7 @@ class Car4WheelImpl(private val wheelLF: Wheel,//左前轮
         wheelRF.backward(speed)
         wheelLB.forward(speed)
         wheelRB.backward(speed)
+        carStatus = CarStatus.STATE_TRUN_RIGHT
     }
 
     override fun brake() {
@@ -58,6 +67,7 @@ class Car4WheelImpl(private val wheelLF: Wheel,//左前轮
         wheelRF.brake()
         wheelLB.brake()
         wheelRB.brake()
+        carStatus = CarStatus.STATE_BRAKE
     }
 
     override fun idle() {
@@ -65,5 +75,6 @@ class Car4WheelImpl(private val wheelLF: Wheel,//左前轮
         wheelRF.idle()
         wheelLB.idle()
         wheelRB.idle()
+        carStatus = CarStatus.STATE_IDLE
     }
 }

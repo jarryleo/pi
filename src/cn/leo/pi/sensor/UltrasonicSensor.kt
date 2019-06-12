@@ -23,6 +23,8 @@ class UltrasonicSensor(trigPin: Int, echoPin: Int) : BaseSensor {
         newValue in 10L..5000L
     }
 
+    var distance :Double = Double.MAX_VALUE
+
     fun listen(listener: (Double) -> Unit) {
         CoroutineUtil.io {
             while (isActive) {
@@ -35,7 +37,7 @@ class UltrasonicSensor(trigPin: Int, echoPin: Int) : BaseSensor {
                             state: GpioPinDigitalStateChangeEvent?) {
                         if (state?.state == PinState.HIGH) {
                             val time2 = System.currentTimeMillis()
-                            val distance = (time2 - time1) * 343.0 / 2.0
+                            distance = (time2 - time1) * 343.0 / 2.0
                             listener(Math.round(distance).toDouble())
                         }
                     }
