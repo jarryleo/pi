@@ -7,7 +7,7 @@ import cn.leo.pi.utils.CoroutineUtil
 import cn.leo.pi.utils.PropertiesUtil
 import cn.leo.pi.utils.logD
 import cn.leo.pi.utils.logI
-import com.alibaba.fastjson.JSON
+import com.google.gson.Gson
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.runBlocking
@@ -21,7 +21,7 @@ fun main(args: Array<String>) = runBlocking {
     listener.subscribe(PropertiesUtil.port){ data, host ->
         val json = String(data, Charsets.UTF_8)
         try {
-            val msg = JSON.parseObject(json, BaseMsg::class.java)
+            val msg = Gson().fromJson(json, BaseMsg::class.java)
             if (msg.type == MsgType.TYPE_BROADCAST) {
                 timeOut = 0
                 if (remoteHost !=host) {
@@ -54,7 +54,7 @@ fun main(args: Array<String>) = runBlocking {
     while (isActive){
         val text = scanner.next()
         val msg = BaseMsg<String>(msg = text)
-        val json = JSON.toJSONString(msg)
+        val json = Gson().toJson(msg)
         sender.send(json.toByteArray(Charsets.UTF_8))
     }
 }

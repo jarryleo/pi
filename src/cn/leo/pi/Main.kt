@@ -6,10 +6,11 @@ import cn.leo.pi.mycar.Command
 import cn.leo.pi.mycar.MyCar
 import cn.leo.pi.mycar.PwmCommand
 import cn.leo.pi.udp.UdpFrame
+import cn.leo.pi.utils.JsonUtil
 import cn.leo.pi.utils.PropertiesUtil
 import cn.leo.pi.utils.logD
 import cn.leo.pi.utils.logI
-import com.alibaba.fastjson.JSON
+import com.google.gson.Gson
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.runBlocking
@@ -20,13 +21,13 @@ fun main(args: Array<String>) = runBlocking {
     listener.subscribe(PropertiesUtil.port){ data, host ->
         val json = String(data, Charsets.UTF_8)
         try {
-            val msg = JSON.parseObject(json, BaseMsg::class.java)
+            val msg = JsonUtil.fromJson(json, BaseMsg::class.java)
             if (msg.type == MsgType.TYPE_CAR) {
                 //小车执行普通指令（前后左右转弯）
-                MyCar.executeCommand(msg.data as Command)
+                MyCar.executeCommand(object :BaseMsg<Command>(){}.fromJson(json).data!!)
             }else if(msg.type == MsgType.TYPE_PWM_COMMAND){
                 //小车执行精细指令（每个轮子独立控制）特技玩法
-                MyCar.executePWM(msg.data as PwmCommand)
+                MyCar.executePWM(object :BaseMsg<PwmCommand>(){}.fromJson(json).data!!)
             }
             if (msg.type != MsgType.TYPE_BROADCAST) {
                 logD("$host :$json")
@@ -40,7 +41,7 @@ fun main(args: Array<String>) = runBlocking {
     while (isActive){
         delay(1000)
         val msg = BaseMsg<String>(type = MsgType.TYPE_BROADCAST)
-        val json = JSON.toJSONString(msg)
+        val json = JsonUtil.toJson(msg)
         sender.sendBroadcast(json.toByteArray(Charsets.UTF_8))
     }
 }
