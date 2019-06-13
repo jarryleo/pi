@@ -24,6 +24,7 @@ object MyCar {
 
     val car = Car4WheelImpl(wheelLF, wheelRF, wheelLB, wheelRB)
 
+    //超声波测距防正面撞击
     val ultrasonicSensor = UltrasonicSensor(PropertiesUtil.pinTrig,PropertiesUtil.pinEcho)
             .apply {
                 listen {
