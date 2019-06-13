@@ -11,11 +11,14 @@ import cn.leo.pi.utils.PropertiesUtil
 import cn.leo.pi.utils.logD
 import cn.leo.pi.utils.logI
 import com.google.gson.Gson
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.runBlocking
 
 fun main(args: Array<String>) = runBlocking {
+    //延时10秒等待系统启动完成
+    delay(10000)
     val sender = UdpFrame.getSender(PropertiesUtil.port)
     val listener = UdpFrame.getListener()
     listener.subscribe(PropertiesUtil.port){ data, host ->
@@ -28,6 +31,11 @@ fun main(args: Array<String>) = runBlocking {
             }else if(msg.type == MsgType.TYPE_PWM_COMMAND){
                 //小车执行精细指令（每个轮子独立控制）特技玩法
                 MyCar.executePWM(object :BaseMsg<PwmCommand>(){}.fromJson(json).data!!)
+            }else if(msg.type == MsgType.TYPE_SHUTDOWN){
+                //关闭服务
+                listener.closePort(PropertiesUtil.port)
+                this.cancel()
+                System.exit(0)
             }
             if (msg.type != MsgType.TYPE_BROADCAST) {
                 logD("$host :$json")
