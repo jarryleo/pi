@@ -16,7 +16,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.runBlocking
 
-fun main(args: Array<String>) = runBlocking {
+fun main() = runBlocking {
     //延时10秒等待系统启动完成
     delay(10000)
     val sender = UdpFrame.getSender(PropertiesUtil.port)

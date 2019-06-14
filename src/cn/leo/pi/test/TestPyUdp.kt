@@ -17,7 +17,7 @@ fun main() = runBlocking {
 
     val sender = UdpFrame.getSender("127.0.0.1",25536)
     while (isActive) {
-        delay(10000)
+        delay(1000)
         sender.send("1".toByteArray(Charsets.UTF_8))
     }
 }
