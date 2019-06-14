@@ -8,7 +8,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.runBlocking
 
 fun main() = runBlocking {
-    PythonUtil.exePy("python C:\\Users\\lingluo\\Desktop\\Pipy\\udp\\__init__.py")
+    PythonUtil.exePy("C:/Users/lingluo/Desktop/Pipy/udp/sensor.py","127.0.0.1","25535")
 
     UdpFrame.getListener().subscribe(25535){
         data, host ->
@@ -17,7 +17,7 @@ fun main() = runBlocking {
 
     val sender = UdpFrame.getSender("127.0.0.1",25536)
     while (isActive) {
-        sender.send("Hello Python".toByteArray(Charsets.UTF_8))
-        delay(1000)
+        delay(10000)
+        sender.send("1".toByteArray(Charsets.UTF_8))
     }
 }
