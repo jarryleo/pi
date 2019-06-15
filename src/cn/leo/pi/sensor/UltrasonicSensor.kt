@@ -28,9 +28,9 @@ class UltrasonicSensor(trigPin: Int, echoPin: Int) : BaseSensor {
         newValue in 10L..5000L
     }
 
-    var distance :Double = Double.MAX_VALUE
+    var distance :Float = Float.MAX_VALUE
 
-    fun listen(listener: (Double) -> Unit) {
+    fun listen(listener: (Float) -> Unit) {
         logD("初始化超声波测距传感器")
         echo.setShutdownOptions(true)
         CoroutineUtil.io {
@@ -39,8 +39,8 @@ class UltrasonicSensor(trigPin: Int, echoPin: Int) : BaseSensor {
             echo.addListener(GpioPinListenerDigital { state ->
                 if (state?.state == PinState.HIGH) {
                     time2 = System.currentTimeMillis()
-                    distance = (time2 - time1) * 343.0 / 2.0
-                    listener(Math.round(distance).toDouble())
+                    distance = (time2 - time1) * 343.0f / 2.0f
+                    listener(Math.round(distance).toFloat())
                     logD("time1 = $time1 ,time2= $time2")
                 }
             })

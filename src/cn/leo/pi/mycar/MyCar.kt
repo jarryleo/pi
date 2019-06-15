@@ -5,6 +5,7 @@ import cn.leo.pi.car.WheelPwmImp
 import cn.leo.pi.car.dim.CarStatus
 import cn.leo.pi.gpio.PinUtil
 import cn.leo.pi.sensor.UltrasonicSensor
+import cn.leo.pi.sensor.UltrasonicSensorPy
 import cn.leo.pi.utils.PropertiesUtil
 import cn.leo.pi.utils.logD
 
@@ -24,24 +25,28 @@ object MyCar {
 
     val car = Car4WheelImpl(wheelLF, wheelRF, wheelLB, wheelRB)
 
+
     //超声波测距防正面撞击
-    val ultrasonicSensor = UltrasonicSensor(PropertiesUtil.pinTrig,PropertiesUtil.pinEcho)
-            .apply {
-                listen {
-                    logD("当前距离："+it.toString())
-                    if (it <= 100 && car.carStatus == CarStatus.STATE_FORWARD){
-                        car.brake()
-                    }
-                }
+    val ultrasonicSensorPy = UltrasonicSensorPy(
+            PropertiesUtil.pinTrig,
+            PropertiesUtil.pinEcho,
+            25565,
+            25566).apply {
+        listen {
+            logD("当前距离：$it")
+            if (it <= 100 && car.carStatus == CarStatus.STATE_FORWARD) {
+                car.brake()
             }
+        }
+    }
 
     //小车执行指令
-    fun executeCommand(command: Command){
+    fun executeCommand(command: Command) {
         //logD(command.toString())
-        when(command.command){
+        when (command.command) {
             CommandType.IDLE -> car.idle()
             CommandType.FORWARD -> {
-                if (ultrasonicSensor.distance > 100) {
+                if (ultrasonicSensorPy.distance > 100) {
                     car.forward(command.speed)
                 }
             }
@@ -53,13 +58,14 @@ object MyCar {
             CommandType.BRAKE -> car.brake()
         }
     }
+
     //小车精细控制
-    fun executePWM(command :PwmCommand){
-        if (command.pwmArray.size != 8){
+    fun executePWM(command: PwmCommand) {
+        if (command.pwmArray.size != 8) {
             return
         }
         command.pwmArray.forEachIndexed { index, pwm ->
-            when(index){
+            when (index) {
                 0 -> wheelLF.pin1Pwm.pwm = pwm
                 1 -> wheelLF.pin2Pwm.pwm = pwm
                 2 -> wheelRF.pin1Pwm.pwm = pwm

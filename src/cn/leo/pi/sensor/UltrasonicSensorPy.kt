@@ -1,6 +1,8 @@
 package cn.leo.pi.sensor
 
 import cn.leo.pi.udp.UdpFrame
+import cn.leo.pi.utils.CoroutineUtil
+import cn.leo.pi.utils.PathUtil
 import cn.leo.pi.utils.PythonUtil
 import cn.leo.pi.utils.logD
 import kotlinx.coroutines.delay
@@ -15,22 +17,34 @@ import kotlinx.coroutines.runBlocking
 class UltrasonicSensorPy(trigPin: Int, echoPin: Int,
                          private val sendPort:Int,
                          private val receivePort:Int) : BaseSensor {
-    var sensorDelay = 1
+    //多少秒发送一次,浮点值，可以是小数
+    var sensorDelay = 0.2f
+    var distance = 0f
 
     init {
         //启动python脚本，开启超声波测距
-        PythonUtil.exePy("C:/Users/lingluo/Desktop/Pipy/udp/sensor.py","127.0.0.1","25535")
+        val path = "${PathUtil.getPath()}ultrasonic_sensor.py"
+//        val path = "C:/Users/lingluo/Desktop/Pipy/udp/ultrasonic_sensor.py"
+        PythonUtil.exePy(path,
+                "127.0.0.1",
+                sendPort.toString(),
+                receivePort.toString(),
+                trigPin.toString(),
+                echoPin.toString())
     }
-
-    fun listen() = runBlocking{
-        UdpFrame.getListener().subscribe(receivePort){
-            data, host ->
-            logD(data.toString(Charsets.UTF_8))
+    //监听python发送过来的超声波距离
+    fun listen(listener: (Float) -> Unit) = CoroutineUtil.io{
+        UdpFrame.getListener().subscribe(sendPort){
+            data, _ ->
+            distance = data.toString(Charsets.UTF_8).toFloat()
+            listener(distance)
+            //logD(data.toString(Charsets.UTF_8))
         }
 
-        val sender = UdpFrame.getSender("127.0.0.1",sendPort)
+        //控制超声波采样频率，单位秒
+        val sender = UdpFrame.getSender("127.0.0.1",receivePort)
         while (isActive) {
-            delay(1000)
+            delay((sensorDelay*1000).toLong())
             sender.send(sensorDelay.toString().toByteArray(Charsets.UTF_8))
         }
     }
