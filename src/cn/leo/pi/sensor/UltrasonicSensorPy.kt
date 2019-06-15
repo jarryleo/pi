@@ -25,7 +25,7 @@ class UltrasonicSensorPy(trigPin: Int, echoPin: Int,
     init {
         //启动python脚本，开启超声波测距
         val path = "${PathUtil.getPath()}ultrasonic_sensor.py"
-//        val path = "C:/Users/lingluo/Desktop/Pipy/udp/ultrasonic_sensor.py"
+//        val path = "C:/work/javaCode/pi/ultrasonic_sensor.py"
         if(File(path).exists()){
             PythonUtil.exePy(path,
                     "127.0.0.1",

@@ -34,7 +34,7 @@ object MyCar {
             25566).apply {
         listen {
             logD("当前距离：$it")
-            if (it <= 100 && car.carStatus == CarStatus.STATE_FORWARD) {
+            if (it <= 20 && car.carStatus == CarStatus.STATE_FORWARD) {
                 car.brake()
             }
         }
@@ -46,7 +46,7 @@ object MyCar {
         when (command.command) {
             CommandType.IDLE -> car.idle()
             CommandType.FORWARD -> {
-                if (ultrasonicSensorPy.distance > 100) {
+                if (ultrasonicSensorPy.distance > 30) {
                     car.forward(command.speed)
                 }
             }
