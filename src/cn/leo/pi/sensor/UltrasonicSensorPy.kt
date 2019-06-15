@@ -8,6 +8,7 @@ import cn.leo.pi.utils.logD
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.runBlocking
+import java.io.File
 
 /**
  * 超声波测距
@@ -25,12 +26,16 @@ class UltrasonicSensorPy(trigPin: Int, echoPin: Int,
         //启动python脚本，开启超声波测距
         val path = "${PathUtil.getPath()}ultrasonic_sensor.py"
 //        val path = "C:/Users/lingluo/Desktop/Pipy/udp/ultrasonic_sensor.py"
-        PythonUtil.exePy(path,
-                "127.0.0.1",
-                sendPort.toString(),
-                receivePort.toString(),
-                trigPin.toString(),
-                echoPin.toString())
+        if(File(path).exists()){
+            PythonUtil.exePy(path,
+                    "127.0.0.1",
+                    sendPort.toString(),
+                    receivePort.toString(),
+                    trigPin.toString(),
+                    echoPin.toString())
+        }else{
+            logD("$path 文件不存在")
+        }
     }
     //监听python发送过来的超声波距离
     fun listen(listener: (Float) -> Unit) = CoroutineUtil.io{
