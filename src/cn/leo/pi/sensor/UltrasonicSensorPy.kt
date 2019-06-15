@@ -20,7 +20,7 @@ class UltrasonicSensorPy(trigPin: Int, echoPin: Int,
                          private val receivePort:Int) : BaseSensor {
     //多少秒发送一次,浮点值，可以是小数
     var sensorDelay = 0.2f
-    var distance = 0f
+    var distance = 1000f
 
     init {
         //启动python脚本，开启超声波测距
@@ -33,6 +33,7 @@ class UltrasonicSensorPy(trigPin: Int, echoPin: Int,
                     receivePort.toString(),
                     trigPin.toString(),
                     echoPin.toString())
+            logD("python超声波传感器启动")
         }else{
             logD("$path 文件不存在")
         }
