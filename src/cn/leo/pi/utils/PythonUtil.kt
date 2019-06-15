@@ -9,4 +9,11 @@ object PythonUtil {
         cmd.addAll(arg.toList())
         Runtime.getRuntime().exec(cmd.toTypedArray())
     }
+
+    /**
+     * 关闭树莓派
+     */
+    fun powerOff(){
+        Runtime.getRuntime().exec("sudo poweroff")
+    }
 }

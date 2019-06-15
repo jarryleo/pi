@@ -48,7 +48,6 @@ class UltrasonicSensor(trigPin: Int, echoPin: Int) : BaseSensor {
                 trig.pulse(1)
                 //理论上设置间隔是10微妙，但是java只能设置毫秒级别
                 time1 = System.currentTimeMillis()
-                logD("发射一次超声波")
                 delay(delayTime)
             }
         }

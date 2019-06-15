@@ -6,10 +6,7 @@ import cn.leo.pi.mycar.Command
 import cn.leo.pi.mycar.MyCar
 import cn.leo.pi.mycar.PwmCommand
 import cn.leo.pi.udp.UdpFrame
-import cn.leo.pi.utils.JsonUtil
-import cn.leo.pi.utils.PropertiesUtil
-import cn.leo.pi.utils.logD
-import cn.leo.pi.utils.logI
+import cn.leo.pi.utils.*
 import com.google.gson.Gson
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
@@ -18,7 +15,8 @@ import kotlinx.coroutines.runBlocking
 
 fun main() = runBlocking {
     //延时10秒等待系统启动完成
-    delay(10000)
+    logI("系统启动中，请稍候。。。")
+    delay(5000)
     val sender = UdpFrame.getSender(PropertiesUtil.port)
     val listener = UdpFrame.getListener()
     listener.subscribe(PropertiesUtil.port){ data, host ->
@@ -36,6 +34,9 @@ fun main() = runBlocking {
                 listener.closePort(PropertiesUtil.port)
                 this.cancel()
                 System.exit(0)
+            }else if(msg.type == MsgType.TYPE_POWEROFF){
+                //关闭树莓派
+                PythonUtil.powerOff()
             }
             if (msg.type != MsgType.TYPE_BROADCAST) {
                 logD("$host :$json")
