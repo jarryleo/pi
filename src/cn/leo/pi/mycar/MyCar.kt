@@ -2,11 +2,12 @@ package cn.leo.pi.mycar
 
 import cn.leo.pi.car.Car4WheelImpl
 import cn.leo.pi.car.WheelPwmImp
-import cn.leo.pi.car.dim.CarStatus
 import cn.leo.pi.gpio.PinUtil
 import cn.leo.pi.sensor.UltrasonicSensorPy
+import cn.leo.pi.utils.CoroutineUtil
 import cn.leo.pi.utils.PropertiesUtil
 import cn.leo.pi.utils.logD
+import kotlinx.coroutines.delay
 
 object MyCar {
     val wheelLF = WheelPwmImp(
@@ -24,7 +25,7 @@ object MyCar {
 
     val car = Car4WheelImpl(wheelLF, wheelRF, wheelLB, wheelRB)
 
-
+    private var lastDistance = 0f
     //超声波测距
     val ultrasonicSensorPy = UltrasonicSensorPy(
             PropertiesUtil.pinTrig,
@@ -33,10 +34,21 @@ object MyCar {
             25566).apply {
         listen {
             logD("当前距离：$it cm")
-            if (it < 50 && car.carStatus == CarStatus.STATE_FORWARD) {
-                car.brake()
-                logD("前方有障碍物，刹车系统启动")
+            if (it < 80) {
+                if (it < lastDistance) {
+                    if (it < 50) {
+                        car.backward((100 - it).toInt())
+                        CoroutineUtil.io {
+                            delay(200)
+                            car.idle()
+                        }
+                    } else {
+                        car.brake()
+                    }
+                    logD("前方有障碍物，刹车系统启动")
+                }
             }
+            lastDistance = it
         }
     }
 
@@ -55,7 +67,7 @@ object MyCar {
         when (command.command) {
             CommandType.IDLE -> car.idle()
             CommandType.FORWARD -> {
-                if(ultrasonicSensorPy.distance > 30) {
+                if (ultrasonicSensorPy.distance > 30) {
                     car.forward(command.speed)
                 }
             }

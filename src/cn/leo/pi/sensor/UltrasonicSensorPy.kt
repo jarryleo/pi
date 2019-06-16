@@ -7,7 +7,6 @@ import cn.leo.pi.utils.PythonUtil
 import cn.leo.pi.utils.logD
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
-import kotlinx.coroutines.runBlocking
 import java.io.File
 
 /**
@@ -17,51 +16,57 @@ import java.io.File
 
 class UltrasonicSensorPy(private val trigPin: Int,
                          private val echoPin: Int,
-                         private val sendPort:Int,
-                         private val receivePort:Int) : BaseSensor {
+                         private val sendPort: Int,
+                         private val receivePort: Int) : BaseSensor {
     //多少秒发送一次,浮点值，可以是小数
-    var sensorDelay = 0.5f
+    val defaultDelay = 0.2f
+    var sensorDelay = defaultDelay
     var distance = 1000f
+    private var isStart = false
 
     fun startPython() {
         //启动python脚本，开启超声波测距
         val path = "${PathUtil.getPath()}ultrasonic_sensor.py"
 //        val path = "C:/work/javaCode/pi/ultrasonic_sensor.py"
-        if(File(path).exists()){
+        if (File(path).exists()) {
             PythonUtil.exePy(path,
                     "127.0.0.1",
                     sendPort.toString(),
                     receivePort.toString(),
                     trigPin.toString(),
                     echoPin.toString())
-            sensorDelay = 0.5f
+            sensorDelay = defaultDelay
+            isStart = true
             logD("python超声波传感器启动")
-        }else{
+        } else {
             logD("$path 文件不存在")
         }
     }
 
-    fun stop(){
+    fun stop() {
         sensorDelay = 0f
+        distance = 1000f
+        isStart = false
         logD("python超声波传感器关闭")
     }
 
     //监听python发送过来的超声波距离
-    fun listen(listener: (Float) -> Unit) = CoroutineUtil.io{
-        UdpFrame.getListener().subscribe(sendPort){
-            data, _ ->
-            distance = data.toString(Charsets.UTF_8).toFloat()
-            listener(distance)
-            //logD(data.toString(Charsets.UTF_8))
+    fun listen(listener: (Float) -> Unit) = CoroutineUtil.io {
+        UdpFrame.getListener().subscribe(sendPort) { data, _ ->
+            if (isStart) {
+                distance = data.toString(Charsets.UTF_8).toFloat()
+                listener(distance)
+                //logD(data.toString(Charsets.UTF_8))
+            }
         }
 
         //控制超声波采样频率，单位秒
-        val sender = UdpFrame.getSender("127.0.0.1",receivePort)
+        val sender = UdpFrame.getSender("127.0.0.1", receivePort)
         while (isActive) {
             sender.send(sensorDelay.toString().toByteArray(Charsets.UTF_8))
-            if (sensorDelay > 0f) {
+            if (sensorDelay > 0f && isStart) {
                 delay((sensorDelay * 1000).toLong())
-            }else{
+            } else {
                 delay(1000)
             }
         }
