@@ -15,14 +15,15 @@ import java.io.File
  * 数值单位 毫米 mm
  */
 
-class UltrasonicSensorPy(trigPin: Int, echoPin: Int,
+class UltrasonicSensorPy(private val trigPin: Int,
+                         private val echoPin: Int,
                          private val sendPort:Int,
                          private val receivePort:Int) : BaseSensor {
     //多少秒发送一次,浮点值，可以是小数
-    var sensorDelay = 0.2f
+    var sensorDelay = 0.5f
     var distance = 1000f
 
-    init {
+    fun startPython() {
         //启动python脚本，开启超声波测距
         val path = "${PathUtil.getPath()}ultrasonic_sensor.py"
 //        val path = "C:/work/javaCode/pi/ultrasonic_sensor.py"
@@ -33,11 +34,18 @@ class UltrasonicSensorPy(trigPin: Int, echoPin: Int,
                     receivePort.toString(),
                     trigPin.toString(),
                     echoPin.toString())
+            sensorDelay = 0.5f
             logD("python超声波传感器启动")
         }else{
             logD("$path 文件不存在")
         }
     }
+
+    fun stop(){
+        sensorDelay = 0f
+        logD("python超声波传感器关闭")
+    }
+
     //监听python发送过来的超声波距离
     fun listen(listener: (Float) -> Unit) = CoroutineUtil.io{
         UdpFrame.getListener().subscribe(sendPort){
@@ -50,8 +58,13 @@ class UltrasonicSensorPy(trigPin: Int, echoPin: Int,
         //控制超声波采样频率，单位秒
         val sender = UdpFrame.getSender("127.0.0.1",receivePort)
         while (isActive) {
-            delay((sensorDelay*1000).toLong())
             sender.send(sensorDelay.toString().toByteArray(Charsets.UTF_8))
+            if (sensorDelay > 0f) {
+                delay((sensorDelay * 1000).toLong())
+            }else{
+                delay(1000)
+            }
         }
+
     }
 }

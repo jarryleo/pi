@@ -4,7 +4,6 @@ import cn.leo.pi.car.Car4WheelImpl
 import cn.leo.pi.car.WheelPwmImp
 import cn.leo.pi.car.dim.CarStatus
 import cn.leo.pi.gpio.PinUtil
-import cn.leo.pi.sensor.UltrasonicSensor
 import cn.leo.pi.sensor.UltrasonicSensorPy
 import cn.leo.pi.utils.PropertiesUtil
 import cn.leo.pi.utils.logD
@@ -26,19 +25,29 @@ object MyCar {
     val car = Car4WheelImpl(wheelLF, wheelRF, wheelLB, wheelRB)
 
 
-    //超声波测距防正面撞击
+    //超声波测距
     val ultrasonicSensorPy = UltrasonicSensorPy(
             PropertiesUtil.pinTrig,
             PropertiesUtil.pinEcho,
             25565,
             25566).apply {
         listen {
-            logD("当前距离：$it")
-            if (it <= 20 && car.carStatus == CarStatus.STATE_FORWARD) {
+            logD("当前距离：$it cm")
+            if (it < 50 && car.carStatus == CarStatus.STATE_FORWARD) {
                 car.brake()
+                logD("前方有障碍物，刹车系统启动")
             }
         }
     }
+
+    fun setUltrasonic(start: Boolean) {
+        if (start) {
+            ultrasonicSensorPy.startPython()
+        } else {
+            ultrasonicSensorPy.stop()
+        }
+    }
+
 
     //小车执行指令
     fun executeCommand(command: Command) {
@@ -46,7 +55,7 @@ object MyCar {
         when (command.command) {
             CommandType.IDLE -> car.idle()
             CommandType.FORWARD -> {
-                if (ultrasonicSensorPy.distance > 30) {
+                if(ultrasonicSensorPy.distance > 30) {
                     car.forward(command.speed)
                 }
             }
@@ -62,6 +71,7 @@ object MyCar {
     //小车精细控制
     fun executePWM(command: PwmCommand) {
         if (command.pwmArray.size != 8) {
+            logD("指令长度不正确：${command.pwmArray.size}")
             return
         }
         command.pwmArray.forEachIndexed { index, pwm ->

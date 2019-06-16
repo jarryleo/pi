@@ -17,24 +17,27 @@ fun main() = runBlocking {
     //延时5秒等待系统启动完成
     logI("系统启动中，请稍候。。。")
     delay(5000)
+    MyCar.car //初始化我的车
     val sender = UdpFrame.getSender(PropertiesUtil.port)
     val listener = UdpFrame.getListener()
     listener.subscribe(PropertiesUtil.port){ data, host ->
         val json = String(data, Charsets.UTF_8)
         try {
             val msg = JsonUtil.fromJson(json, BaseMsg::class.java)
-            when {
-                msg.type == MsgType.TYPE_CAR -> //小车执行普通指令（前后左右转弯）
+            when(msg.type){
+                MsgType.TYPE_CAR -> //小车执行普通指令（前后左右转弯）
                     MyCar.executeCommand(object :BaseMsg<Command>(){}.fromJson(json).data!!)
-                msg.type == MsgType.TYPE_PWM_COMMAND -> //小车执行精细指令（每个轮子独立控制）特技玩法
+                MsgType.TYPE_PWM_COMMAND -> //小车执行精细指令（每个轮子独立控制）特技玩法
                     MyCar.executePWM(object :BaseMsg<PwmCommand>(){}.fromJson(json).data!!)
-                msg.type == MsgType.TYPE_SHUTDOWN -> {
+                MsgType.TYPE_SET_ULTRASONIC -> //开启关闭超声波传感器
+                    MyCar.setUltrasonic(object :BaseMsg<Boolean>(){}.fromJson(json).data!!)
+                MsgType.TYPE_SHUTDOWN -> {
                     //关闭服务
                     listener.closePort(PropertiesUtil.port)
                     this.cancel()
                     System.exit(0)
                 }
-                msg.type == MsgType.TYPE_POWEROFF -> //关闭树莓派
+                MsgType.TYPE_POWEROFF -> //关闭树莓派
                     PythonUtil.powerOff()
             }
             if (msg.type != MsgType.TYPE_BROADCAST) {

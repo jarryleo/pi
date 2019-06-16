@@ -16,19 +16,23 @@ def distance():
     global GPIO_TRIGGER
     global GPIO_ECHO
 
-    GPIO.output(GPIO_TRIGGER, True)
+    start_time = time.time()
 
+    GPIO.output(GPIO_TRIGGER, True)
     time.sleep(0.00001)
     GPIO.output(GPIO_TRIGGER, False)
 
-    start_time = time.time()
-    stop_time = time.time()
-
     while GPIO.input(GPIO_ECHO) == 0:
-        start_time = time.time()
+        if time.time() - start_time > 1:
+            break
+        pass
+    start_time = time.time()
 
     while GPIO.input(GPIO_ECHO) == 1:
-        stop_time = time.time()
+        if time.time() - start_time > 1:
+            break
+        pass
+    stop_time = time.time()
 
     time_elapsed = stop_time - start_time
     distance = (time_elapsed * 34300) / 2
@@ -39,6 +43,7 @@ def distance():
 global live
 live = True
 global timeout
+timeout = 10
 global delay
 delay = 1.0
 sender = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -49,15 +54,14 @@ def send(addr, port):
     global live
     global delay
     global timeout
-    timeout = 10
     while live:
         sender.sendto(str(distance()).encode('utf-8'), (addr, port))
         print("send msg")
         time.sleep(delay)
         timeout = timeout - 1
-        if timeout < 1:
+        if timeout < 0:
             live = False
-    GPIO.cleanup()
+            GPIO.cleanup()
 
 
 def receive():
@@ -68,7 +72,13 @@ def receive():
     while live:
         data, _ = receiver.recvfrom(1024)
         delay = float(data.decode('utf-8'))
-        timeout = 10
+        if delay <= 0:
+            timeout = 0
+        else:
+            timeout = 10
+        if delay < 0.1:
+            delay = 0.1
+        time.sleep(delay)
 
 
 if __name__ == '__main__':
