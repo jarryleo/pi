@@ -7,7 +7,6 @@ import cn.leo.pi.mycar.MyCar
 import cn.leo.pi.mycar.PwmCommand
 import cn.leo.pi.udp.UdpFrame
 import cn.leo.pi.utils.*
-import com.google.gson.Gson
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -37,8 +36,8 @@ fun main() = runBlocking {
                     this.cancel()
                     System.exit(0)
                 }
-                MsgType.TYPE_POWEROFF -> //关闭树莓派
-                    PythonUtil.powerOff()
+                MsgType.TYPE_COMMAND -> //执行linux指令
+                    RaspiUtil.executeCmd(msg.msg)
             }
             if (msg.type != MsgType.TYPE_BROADCAST) {
                 logD("$host :$json")

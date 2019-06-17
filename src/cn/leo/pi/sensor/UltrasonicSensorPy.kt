@@ -3,7 +3,7 @@ package cn.leo.pi.sensor
 import cn.leo.pi.udp.UdpFrame
 import cn.leo.pi.utils.CoroutineUtil
 import cn.leo.pi.utils.PathUtil
-import cn.leo.pi.utils.PythonUtil
+import cn.leo.pi.utils.RaspiUtil
 import cn.leo.pi.utils.logD
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -36,7 +36,7 @@ class UltrasonicSensorPy(private val trigPin: Int,
         val path = "${PathUtil.getPath()}ultrasonic_sensor.py"
 //        val path = "C:/work/javaCode/pi/ultrasonic_sensor.py"
         if (File(path).exists()) {
-            PythonUtil.exePy(path,
+            RaspiUtil.exePy(path,
                     "127.0.0.1",
                     sendPort.toString(),
                     receivePort.toString(),
