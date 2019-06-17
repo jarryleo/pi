@@ -24,8 +24,15 @@ class UltrasonicSensorPy(private val trigPin: Int,
     var distance = 1000f
     private var isStart = false
 
-    fun startPython() {
+    fun startPython() = CoroutineUtil.io {
         //启动python脚本，开启超声波测距
+        if (isStart){
+            sensorDelay = 0f
+            delay(1100)
+            if (!isStart) {
+                return@io
+            }
+        }
         val path = "${PathUtil.getPath()}ultrasonic_sensor.py"
 //        val path = "C:/work/javaCode/pi/ultrasonic_sensor.py"
         if (File(path).exists()) {
@@ -45,8 +52,8 @@ class UltrasonicSensorPy(private val trigPin: Int,
 
     fun stop() {
         sensorDelay = 0f
-        distance = 1000f
         isStart = false
+        distance = 1000f
         logD("python超声波传感器关闭")
     }
 
