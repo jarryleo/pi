@@ -30,6 +30,8 @@ fun main() = runBlocking {
                     MyCar.executePWM(object :BaseMsg<PwmCommand>(){}.fromJson(json).data!!)
                 MsgType.TYPE_SET_ULTRASONIC -> //开启关闭超声波传感器
                     MyCar.setUltrasonic(object :BaseMsg<Boolean>(){}.fromJson(json).data!!)
+                MsgType.TYPE_SETTING_GEAR -> //调整摄像头角度
+                    MyCar.settingGear(object :BaseMsg<Int>(){}.fromJson(json).data!!)
                 MsgType.TYPE_SHUTDOWN -> {
                     //关闭服务
                     listener.closePort(PropertiesUtil.port)

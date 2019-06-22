@@ -3,6 +3,7 @@ package cn.leo.pi.mycar
 import cn.leo.pi.car.Car4WheelImpl
 import cn.leo.pi.car.WheelPwmImp
 import cn.leo.pi.gpio.PinUtil
+import cn.leo.pi.sensor.SettingGear
 import cn.leo.pi.sensor.UltrasonicSensorPy
 import cn.leo.pi.utils.CoroutineUtil
 import cn.leo.pi.utils.PropertiesUtil
@@ -24,6 +25,9 @@ object MyCar {
             PinUtil.getPin(PropertiesUtil.pinRB2))
 
     val car = Car4WheelImpl(wheelLF, wheelRF, wheelLB, wheelRB)
+
+    //摄像头舵机
+    val gear = SettingGear(PinUtil.getPin(PropertiesUtil.pinGear))
 
     private var lastDistance = 0f
     //超声波测距
@@ -58,6 +62,10 @@ object MyCar {
         } else {
             ultrasonicSensorPy.stop()
         }
+    }
+
+    fun settingGear(direction:Int){
+        gear.setDirection(direction)
     }
 
 

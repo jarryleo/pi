@@ -16,4 +16,5 @@ object PropertiesUtil {
     val pinRB2 = p.getProperty("pinRB2").toInt()
     val pinTrig = p.getProperty("pinTrig").toInt()
     val pinEcho = p.getProperty("pinEcho").toInt()
+    val pinGear = p.getProperty("pinGear").toInt()
 }
