@@ -9,9 +9,9 @@ class CarLight(pin: Pin) {
 
     fun lightTrigger(isOn:Boolean) = CoroutineUtil.io {
         if(isOn){
-            lightPin.low()
-        }else{
             lightPin.high()
+        }else{
+            lightPin.low()
         }
     }
 }
