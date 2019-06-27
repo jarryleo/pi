@@ -33,7 +33,7 @@ fun main() = runBlocking {
                 MsgType.TYPE_SETTING_GEAR -> //调整摄像头角度
                     MyCar.settingGear(object : BaseMsg<Int>() {}.fromJson(json).data!!)
                 MsgType.TYPE_LIGHT -> //车灯开关
-                    MyCar.lightTogger(object : BaseMsg<Boolean>() {}.fromJson(json).data!!)
+                    MyCar.lightTrigger(object : BaseMsg<Boolean>() {}.fromJson(json).data!!)
                 MsgType.TYPE_SHUTDOWN -> {
                     //关闭服务
                     listener.closePort(PropertiesUtil.port)

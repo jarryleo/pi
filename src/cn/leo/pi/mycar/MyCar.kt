@@ -72,7 +72,7 @@ object MyCar {
         gear.setDirection(direction)
     }
 
-    fun lightTogger(isOn: Boolean) {
+    fun lightTrigger(isOn: Boolean) {
         light.lightTrigger(isOn)
     }
 
