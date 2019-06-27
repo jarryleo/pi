@@ -19,19 +19,21 @@ fun main() = runBlocking {
     MyCar.car //初始化我的车
     val sender = UdpFrame.getSender(PropertiesUtil.port)
     val listener = UdpFrame.getListener()
-    listener.subscribe(PropertiesUtil.port){ data, host ->
+    listener.subscribe(PropertiesUtil.port) { data, host ->
         val json = String(data, Charsets.UTF_8)
         try {
             val msg = JsonUtil.fromJson(json, BaseMsg::class.java)
-            when(msg.type){
+            when (msg.type) {
                 MsgType.TYPE_CAR -> //小车执行普通指令（前后左右转弯）
-                    MyCar.executeCommand(object :BaseMsg<Command>(){}.fromJson(json).data!!)
+                    MyCar.executeCommand(object : BaseMsg<Command>() {}.fromJson(json).data!!)
                 MsgType.TYPE_PWM_COMMAND -> //小车执行精细指令（每个轮子独立控制）特技玩法
-                    MyCar.executePWM(object :BaseMsg<PwmCommand>(){}.fromJson(json).data!!)
+                    MyCar.executePWM(object : BaseMsg<PwmCommand>() {}.fromJson(json).data!!)
                 MsgType.TYPE_SET_ULTRASONIC -> //开启关闭超声波传感器
-                    MyCar.setUltrasonic(object :BaseMsg<Boolean>(){}.fromJson(json).data!!)
+                    MyCar.setUltrasonic(object : BaseMsg<Boolean>() {}.fromJson(json).data!!)
                 MsgType.TYPE_SETTING_GEAR -> //调整摄像头角度
-                    MyCar.settingGear(object :BaseMsg<Int>(){}.fromJson(json).data!!)
+                    MyCar.settingGear(object : BaseMsg<Int>() {}.fromJson(json).data!!)
+                MsgType.TYPE_LIGHT -> //车灯开关
+                    MyCar.lightTogger(object : BaseMsg<Boolean>() {}.fromJson(json).data!!)
                 MsgType.TYPE_SHUTDOWN -> {
                     //关闭服务
                     listener.closePort(PropertiesUtil.port)
@@ -44,13 +46,13 @@ fun main() = runBlocking {
             if (msg.type != MsgType.TYPE_BROADCAST) {
                 logD("$host :$json")
             }
-        }catch (e:Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }
     logI("小车控制系统启动完成")
     //每秒广播自身位置
-    while (isActive){
+    while (isActive) {
         delay(1000)
         val msg = BaseMsg<String>(type = MsgType.TYPE_BROADCAST)
         val json = JsonUtil.toJson(msg)
