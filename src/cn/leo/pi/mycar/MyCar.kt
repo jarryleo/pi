@@ -9,7 +9,9 @@ import cn.leo.pi.sensor.UltrasonicSensorPy
 import cn.leo.pi.utils.CoroutineUtil
 import cn.leo.pi.utils.PropertiesUtil
 import cn.leo.pi.utils.logD
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 
 object MyCar {
     val wheelLF = WheelPwmImp(
@@ -33,7 +35,7 @@ object MyCar {
     //车灯
     val light = CarLight(PinUtil.getPin(PropertiesUtil.pinLight))
 
-    private var lastDistance = 0f
+
     //超声波测距
     val ultrasonicSensorPy = UltrasonicSensorPy(
             PropertiesUtil.pinTrig,
@@ -41,29 +43,16 @@ object MyCar {
             25565,
             25566).apply {
         listen {
-            logD("当前距离：$it cm")
-            if (it < 80) {
-                if (it < lastDistance) {
-                    if (it < 50) {
-                        car.backward((100 - it).toInt())
-                        CoroutineUtil.io {
-                            delay(200)
-                            car.idle()
-                        }
-                    } else {
-                        car.brake()
-                    }
-                    logD("前方有障碍物，刹车系统启动")
-                }
-            }
-            lastDistance = it
+            AutoRun.lastDistance = it
         }
     }
 
     fun setUltrasonic(start: Boolean) {
         if (start) {
             ultrasonicSensorPy.startPython()
+            AutoRun.run(car)
         } else {
+            AutoRun.stop()
             ultrasonicSensorPy.stop()
         }
     }
@@ -115,5 +104,4 @@ object MyCar {
             }
         }
     }
-
 }
