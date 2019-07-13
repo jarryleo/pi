@@ -39,6 +39,7 @@ object AutoRun {
                     car.forward(50)
                 }
             }
+            car.idle()
         }
     }
 }
