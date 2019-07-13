@@ -26,7 +26,7 @@ object AutoRun {
                     car.brake()
                     delay(500)
                     //左转
-                    car.left(50)
+                    car.turnLeft(50)
                     turnTimes ++
                     delay(500)
                     car.idle()
